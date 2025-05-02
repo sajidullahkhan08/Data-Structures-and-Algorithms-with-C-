@@ -1,0 +1,6 @@
+Name: SAJID
+Father Name: AZIZ
+Age: 23
+DOB: 02-08-2008
+Class: BSCS F23
+Registration No: 4994
