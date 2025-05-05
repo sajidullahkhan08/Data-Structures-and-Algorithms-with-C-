@@ -166,9 +166,6 @@ public:
     }
 };
 
-//------------------------------------------
-// Main Program (for testing)
-//------------------------------------------
 int main() {
     BSTCourseManager manager;
     int choice;
