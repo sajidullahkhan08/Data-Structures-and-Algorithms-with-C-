@@ -2,23 +2,19 @@
 #include <string>
 using namespace std;
 
-//------------------------------------------
 // Structure to store Course Information
-//------------------------------------------
 struct Course {
-    int courseID;              // Unique ID
-    string courseName;         // Name of course
-    int creditHours;           // Number of credit hours
+    int courseID;   
+    string courseName;    
+    int creditHours; 
 };
 
-//------------------------------------------
 // Node of BST that holds Course
-//------------------------------------------
 class CourseNode {
 public:
-    Course data;               // Course info
-    CourseNode* left;          // Left child
-    CourseNode* right;         // Right child
+    Course data;          
+    CourseNode* left;        
+    CourseNode* right;  
 
     CourseNode(Course c) {
         data = c;
@@ -26,12 +22,10 @@ public:
     }
 };
 
-//----------------------------------------------------------
 // BST Manager to handle insertion, deletion, search, etc.
-//----------------------------------------------------------
 class BSTCourseManager {
 private:
-    CourseNode* root; // Root of the BST
+    CourseNode* root;
 
     // Helper for inserting a node recursively
     CourseNode* insert(CourseNode* node, Course c) {
