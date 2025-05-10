@@ -1,4 +1,4 @@
-// Part A: Student Record Management using Hash Table (No STL Used)
+// Part A: Student Record Management using Hash Table
 #include <iostream>
 #include <cstring> // for strcpy
 using namespace std;
@@ -31,7 +31,9 @@ public:
 
     void insert(int roll, const char* name, const char* dept, float cgpa) {
         int index = hashFunction(roll);
-        Student* newStudent = new Student{roll, "", "", cgpa, nullptr};
+        Student* newStudent = new Student;
+        newStudent->rollNumber = roll;
+        newStudent->cgpa = cgpa;
         strcpy(newStudent->name, name);
         strcpy(newStudent->department, dept);
         newStudent->next = table[index];
