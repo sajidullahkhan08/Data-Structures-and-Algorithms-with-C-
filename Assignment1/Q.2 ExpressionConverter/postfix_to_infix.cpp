@@ -1,5 +1,5 @@
 #include <iostream>
-#include <fstream>
+#include <fstream> // For file operations
 #include <string>
 #include "stack.h"
 

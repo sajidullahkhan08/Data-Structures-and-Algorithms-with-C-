@@ -1,7 +1,7 @@
 #include <iostream>
-#include <fstream>
+#include <fstream> // For file operations
 #include <string>
-#include <algorithm>
+#include <algorithm> // for reverse function used in prefixToInfix
 #include "stack.h"
 
 using namespace std;
