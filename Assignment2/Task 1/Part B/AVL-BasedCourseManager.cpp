@@ -2,36 +2,27 @@
 #include <string>
 using namespace std;
 
-// Course structure
-struct Course {
+class AVLNode {
+public:
     int courseCode;
     string courseName;
     int creditHours;
-};
-
-// AVL Node structure
-class AVLNode {
-public:
-    Course data;
     AVLNode* left;
     AVLNode* right;
     int height;
 
-    AVLNode(Course c) {
-        data = c;
+    AVLNode(int code, string name, int credit) {
+        courseCode = code;
+        courseName = name;
+        creditHours = credit;
         left = right = nullptr;
         height = 1;
     }
 };
 
-// AVL Tree Course Manager
 class AVLCourseManager {
-private:
-    AVLNode* root;
-
-    int max(int a, int b) {
-        return (a > b) ? a : b;
-    }
+public:
+    AVLNode* root = nullptr;
 
     int height(AVLNode* node) {
         return node ? node->height : 0;
@@ -41,12 +32,15 @@ private:
         return node ? height(node->left) - height(node->right) : 0;
     }
 
+    int max(int a, int b) {
+        return (a > b) ? a : b;
+    }
+
     AVLNode* rotateRight(AVLNode* y) {
         AVLNode* x = y->left;
         AVLNode* T2 = x->right;
         x->right = y;
         y->left = T2;
-
         y->height = 1 + max(height(y->left), height(y->right));
         x->height = 1 + max(height(x->left), height(x->right));
         return x;
@@ -57,32 +51,31 @@ private:
         AVLNode* T2 = y->left;
         y->left = x;
         x->right = T2;
-
         x->height = 1 + max(height(x->left), height(x->right));
         y->height = 1 + max(height(y->left), height(y->right));
         return y;
     }
 
-    AVLNode* insert(AVLNode* node, Course c) {
-        if (!node) return new AVLNode(c);
+    AVLNode* insert(AVLNode* node, int code, string name, int credit) {
+        if (!node) return new AVLNode(code, name, credit);
 
-        if (c.courseCode < node->data.courseCode)
-            node->left = insert(node->left, c);
+        if (code < node->courseCode)
+            node->left = insert(node->left, code, name, credit);
         else
-            node->right = insert(node->right, c);
+            node->right = insert(node->right, code, name, credit);
 
         node->height = 1 + max(height(node->left), height(node->right));
         int balance = getBalance(node);
 
-        if (balance > 1 && c.courseCode < node->left->data.courseCode)
+        if (balance > 1 && code < node->left->courseCode)
             return rotateRight(node);
-        if (balance < -1 && c.courseCode > node->right->data.courseCode)
+        if (balance < -1 && code > node->right->courseCode)
             return rotateLeft(node);
-        if (balance > 1 && c.courseCode > node->left->data.courseCode) {
+        if (balance > 1 && code > node->left->courseCode) {
             node->left = rotateLeft(node->left);
             return rotateRight(node);
         }
-        if (balance < -1 && c.courseCode < node->right->data.courseCode) {
+        if (balance < -1 && code < node->right->courseCode) {
             node->right = rotateRight(node->right);
             return rotateLeft(node);
         }
@@ -90,23 +83,35 @@ private:
         return node;
     }
 
+    void addCourse(int code, string name, int credit) {
+        root = insert(root, code, name, credit);
+        cout << "Course added successfully (AVL Balanced).\n";
+    }
+
+    AVLNode* findMin(AVLNode* node) {
+        while (node && node->left)
+            node = node->left;
+        return node;
+    }
+
     AVLNode* deleteCourse(AVLNode* node, int code) {
         if (!node) return node;
 
-        if (code < node->data.courseCode)
+        if (code < node->courseCode)
             node->left = deleteCourse(node->left, code);
-        else if (code > node->data.courseCode)
+        else if (code > node->courseCode)
             node->right = deleteCourse(node->right, code);
         else {
             if (!node->left || !node->right) {
                 AVLNode* temp = node->left ? node->left : node->right;
                 delete node;
                 return temp;
-            } else {
-                AVLNode* temp = findMin(node->right);
-                node->data = temp->data;
-                node->right = deleteCourse(node->right, temp->data.courseCode);
             }
+            AVLNode* temp = findMin(node->right);
+            node->courseCode = temp->courseCode;
+            node->courseName = temp->courseName;
+            node->creditHours = temp->creditHours;
+            node->right = deleteCourse(node->right, temp->courseCode);
         }
 
         node->height = 1 + max(height(node->left), height(node->right));
@@ -128,146 +133,119 @@ private:
         return node;
     }
 
-    AVLNode* search(AVLNode* node, int code) {
-        if (!node || node->data.courseCode == code)
-            return node;
-        if (code < node->data.courseCode)
-            return search(node->left, code);
-        return search(node->right, code);
-    }
-
-    void inorder(AVLNode* node) {
-        if (node) {
-            inorder(node->left);
-            displayCourse(node->data);
-            inorder(node->right);
-        }
-    }
-
-    int countCourses(AVLNode* node) {
-        if (!node) return 0;
-        return 1 + countCourses(node->left) + countCourses(node->right);
-    }
-
-    AVLNode* findMin(AVLNode* node) {
-        while (node && node->left)
-            node = node->left;
-        return node;
-    }
-
-    AVLNode* findMax(AVLNode* node) {
-        while (node && node->right)
-            node = node->right;
-        return node;
-    }
-
-    void displayCourse(Course c) {
-        cout << "Course ID: " << c.courseCode
-             << ", Name: " << c.courseName
-             << ", Credit Hours: " << c.creditHours << endl;
-    }
-
-public:
-    AVLCourseManager() {
-        root = nullptr;
-    }
-
-    void addCourse(Course c) {
-        root = insert(root, c);
-        cout << "Course added successfully (AVL Balanced).\n";
-    }
-
-    void deleteCourse(int code) {
+    void removeCourse(int code) {
         root = deleteCourse(root, code);
         cout << "Course deleted if found (AVL Balanced).\n";
+    }
+
+    AVLNode* search(AVLNode* node, int code) {
+        if (!node || node->courseCode == code)
+            return node;
+        return code < node->courseCode ? search(node->left, code) : search(node->right, code);
     }
 
     void searchCourse(int code) {
         AVLNode* result = search(root, code);
         if (result)
-            displayCourse(result->data);
+            displayCourse(result);
         else
             cout << "Course not found.\n";
     }
 
+    void displayCourse(AVLNode* c) {
+        cout << "Course ID: " << c->courseCode
+             << ", Name: " << c->courseName
+             << ", Credit Hours: " << c->creditHours
+             << ", Balance Factor: " << getBalance(c) << endl;
+    }
+
+    void inorder(AVLNode* node) {
+        if (node) {
+            inorder(node->left);
+            displayCourse(node);
+            inorder(node->right);
+        }
+    }
+
     void displayAllCourses() {
-        cout << "\n--- All Courses (In-Order Traversal) ---\n";
+        cout << "\n--- In-Order Traversal with Balance Factors ---\n";
         inorder(root);
-        cout << "----------------------------------------\n";
+        cout << "-----------------------------------------------\n";
+    }
+
+    int count(AVLNode* node) {
+        return node ? 1 + count(node->left) + count(node->right) : 0;
     }
 
     void countCourses() {
-        cout << "Total number of courses: " << countCourses(root) << endl;
+        cout << "Total Courses: " << count(root) << endl;
     }
 
     void displayMinMax() {
-        AVLNode* min = findMin(root);
-        AVLNode* max = findMax(root);
-        if (min) cout << "Minimum Course ID: " << min->data.courseCode << endl;
-        if (max) cout << "Maximum Course ID: " << max->data.courseCode << endl;
+        AVLNode* minNode = findMin(root);
+        AVLNode* maxNode = root;
+        while (maxNode && maxNode->right)
+            maxNode = maxNode->right;
+
+        if (minNode) cout << "Minimum Course ID: " << minNode->courseCode << endl;
+        if (maxNode) cout << "Maximum Course ID: " << maxNode->courseCode << endl;
     }
 };
 
-// -------- Main Menu --------
 int main() {
     AVLCourseManager manager;
     int choice;
 
-    do {
-        cout << "\n===== AVL Course Management Menu =====\n";
+    while (true) {
+        cout << "\n===== AVL Course Manager Menu =====\n";
         cout << "1. Add Course\n";
         cout << "2. Delete Course\n";
         cout << "3. Search Course\n";
         cout << "4. Display All Courses\n";
-        cout << "5. Count Courses\n";
+        cout << "5. Count Total Courses\n";
         cout << "6. Display Min and Max Course IDs\n";
-        cout << "7. Exit\n";
-        cout << "Enter choice: ";
+        cout << "0. Exit\n";
+        cout << "Enter your choice: ";
         cin >> choice;
 
-        switch (choice) {
-            case 1: {
-                Course c;
-                cout << "Enter Course ID: ";
-                cin >> c.courseCode;
-                cin.ignore();
-                cout << "Enter Course Name: ";
-                getline(cin, c.courseName);
-                cout << "Enter Credit Hours: ";
-                cin >> c.creditHours;
-                manager.addCourse(c);
-                break;
-            }
-            case 2: {
-                int id;
-                cout << "Enter Course ID to delete: ";
-                cin >> id;
-                manager.deleteCourse(id);
-                break;
-            }
-            case 3: {
-                int id;
-                cout << "Enter Course ID to search: ";
-                cin >> id;
-                manager.searchCourse(id);
-                break;
-            }
-            case 4:
-                manager.displayAllCourses();
-                break;
-            case 5:
-                manager.countCourses();
-                break;
-            case 6:
-                manager.displayMinMax();
-                break;
-            case 7:
-                cout << "Exiting... Goodbye!\n";
-                break;
-            default:
-                cout << "Invalid choice. Try again.\n";
-        }
-    } while (choice != 7);
+        if (choice == 0) break;
 
+        if (choice == 1) {
+            int id, credit;
+            string name;
+            cout << "Enter Course ID: "; cin >> id;
+            cin.ignore();
+            cout << "Enter Course Name: "; getline(cin, name);
+            cout << "Enter Credit Hours: "; cin >> credit;
+            manager.addCourse(id, name, credit);
+        } else if (choice == 2) {
+            int id;
+            cout << "Enter Course ID to delete: ";
+            cin >> id;
+            manager.removeCourse(id);
+        } else if (choice == 3) {
+            int id;
+            cout << "Enter Course ID to search: ";
+            cin >> id;
+            manager.searchCourse(id);
+        } else if (choice == 4) {
+            manager.displayAllCourses();
+        } else if (choice == 5) {
+            manager.countCourses();
+        } else if (choice == 6) {
+            manager.displayMinMax();
+        } else {
+            cout << "Invalid choice. Try again.\n";
+        }
+    }
+
+    cout << "Program exited.\n";
     return 0;
 }
+
+/* Discussion: Why AVL Rebalancing Improves Lookup Performance?
+In a normal Binary Search Tree (BST), if we insert nodes in sorted or nearly sorted order, the tree becomes skewed — like a linked list — making search, insertion, and deletion operations slower (O(n)).
+
+An AVL Tree solves this problem by automatically rebalancing itself after every insertion and deletion. It ensures that the height difference (balance factor) between the left and right subtrees of any node stays within -1, 0, or +1.
+
+This self-balancing keeps the tree height-balanced, maintaining logarithmic height — which ensures that search, insert, and delete operations all run in O(log n) time. As a result, even with large amounts of data, the system remains consistently fast and efficient for course lookups.*/

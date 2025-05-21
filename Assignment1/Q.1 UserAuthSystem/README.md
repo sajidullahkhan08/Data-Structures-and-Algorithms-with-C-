@@ -1,8 +1,6 @@
-### **📄 README.md (User Authentication and Profile Management System in C++)**  
-```md
 # User Authentication System (C++)
 
-## 📌 Overview
+##  Overview
 This is a **User Authentication and Profile Management System** implemented in **C++**, featuring:
 - **User Registration & Login**
 - **Profile Management (Read & Overwrite)**
@@ -12,31 +10,31 @@ This is a **User Authentication and Profile Management System** implemented in *
 
 ---
 
-## 🚀 Features
-✅ **Register a New User**
+##  Features
+ **Register a New User**
 - Users provide a **unique username** and **numeric password** (10000-65000).
 - After registration, users create their **profile**.
 
-✅ **Login System**
+ **Login System**
 - Users log in with their **username & password**.
 - If credentials are incorrect, they can **retry or register**.
 
-✅ **Profile Management**
+ **Profile Management**
 - Users can **read** or **overwrite** their profile after logging in.
 
-✅ **Data Storage**
+ **Data Storage**
 - **Users & passwords** are stored in `users.txt`.
 - **User profiles** are saved in `username.txt` (e.g., `sajid.txt`).
 
-✅ **Input Validation**
+ **Input Validation**
 - Prevents **program crashes** by ensuring numeric input for **menus, passwords, and ages**.
 
-✅ **Navigation & Go Back Options**
+ **Navigation & Go Back Options**
 - Users can **return to the main menu** instead of being forced to exit.
 
 ---
 
-## 📂 File Structure
+##  File Structure
 ```
 /UserAuthSystem
 │── main.cpp        # C++ source code
@@ -47,18 +45,17 @@ This is a **User Authentication and Profile Management System** implemented in *
 
 ---
 
-## 🛠️ Installation & Setup
-### **1️⃣ Compile the Program**
+##  Installation & Setup
+### **1️ Compile the Program**
 Open **VS Code terminal** (or command prompt) and run:
 ```sh
 g++ main.cpp -o user_auth_system
 ```
 
-### **2️⃣ Run the Program**
+### **2️ Run the Program**
 ```sh
 ./user_auth_system
 ```
-
 ---
 
 ## 🎮 How to Use
@@ -70,9 +67,9 @@ g++ main.cpp -o user_auth_system
 3. Exit
 Enter choice: 
 ```
-✅ **Enter `1` to Login**  
-✅ **Enter `2` to Register**  
-✅ **Enter `3` to Exit**  
+ **Enter `1` to Login**  
+ **Enter `2` to Register**  
+ **Enter `3` to Exit**  
 
 ---
 
@@ -99,8 +96,8 @@ Enter choice:
 
 ---
 
-## 📜 Example Usage
-### **✅ Successful Registration**
+##  Example Usage
+### ** Successful Registration**
 ```
 Enter a Username to start registration (or type 4 to return): sajid
 Enter a numeric password (10000-65000): 12345
@@ -115,7 +112,7 @@ Enter Registration No: 123456
 Profile created successfully!
 ```
 
-### **✅ Successful Login**
+### ** Successful Login**
 ```
 Enter Username (or type 4 to return): sajid
 Enter password: 12345
@@ -127,7 +124,7 @@ Login successful!
 Enter choice: 1
 ```
 
-### **❌ Invalid Login**
+### ** Invalid Login**
 ```
 Enter Username (or type 4 to return): unknown
 Enter password: 54321
@@ -137,7 +134,7 @@ Would you like to register instead? (1 for Yes, 2 for No): 1
 
 ---
 
-## 📌 Notes
+##  Notes
 - User credentials are stored in **plain text** (`users.txt`).
 - Each user has a separate **profile file** (`username.txt`).
 - The program **prevents crashes** by ensuring valid numeric inputs.
@@ -145,20 +142,20 @@ Would you like to register instead? (1 for Yes, 2 for No): 1
 
 ---
 
-## 🔥 Future Improvements (Optional)
-- 🔐 **Encrypt passwords** instead of storing them in plain text.
-- 📂 **Store user data in a database** instead of text files.
-- 🌐 **Create a GUI version** using C++ frameworks.
+##  Future Improvements (Optional)
+-  **Encrypt passwords** instead of storing them in plain text.
+-  **Store user data in a database** instead of text files.
+-  **Create a GUI version** using C++ frameworks.
 
 ---
 
-## 📜 License
+##  License
 This project is **free to use** for learning purposes.
 
 ---
 
-## 👨‍💻 Author
+## 👨 Author
 **Sajidullah Khan**
 **4995-FOC/BSCS/F23-B**  
-📍 **International Islamic University Islamabad**  
+ **International Islamic University Islamabad**  
 ```

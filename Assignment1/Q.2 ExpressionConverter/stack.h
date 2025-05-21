@@ -1,49 +1,67 @@
-#ifndef STACK_H // ifndef is used for preprocessor directives to prevent multiple inclusions of the same header file
-#define STACK_H // This is a header guard to prevent multiple inclusions of this header file
+#ifndef STACK_H
+#define STACK_H
 
 #include <iostream>
 using namespace std;
 
-template <typename T> // Template class to allow for different data types, template<typename T> allows the class to be used with any data type
+// Node class to store data and a pointer to the next node
+template <typename T>
 class Node {
 public:
-    T data; // T is the data type of the node
-    Node* next;
+    T data;            // Stores value of any type
+    Node* next;        // Pointer to the next node
+
     Node(T val) {
         data = val;
         next = nullptr;
     }
 };
 
+// Stack class using linked list
 template <typename T>
 class Stack {
 private:
-    Node<T>* top; // <T> indicates that top is a pointer to a Node of type T
-public:
-    Stack() { top = nullptr; }
-    
-    bool isEmpty() { return top == nullptr; }
+    Node<T>* top;  // Pointer to the top of the stack
 
-    void push(T value) {
-        Node<T>* newNode = new Node<T>(value); // Create a new node with the given value (T value)
-        newNode->next = top; // Link the new node to the previous top
-        top = newNode; // Update top to the new node
+public:
+    Stack() {
+        top = nullptr;
     }
 
+    // Check if stack is empty
+    bool isEmpty() {
+        return top == nullptr;
+    }
+
+    // Add a value to the top of the stack
+    void push(T value) {
+        Node<T>* newNode = new Node<T>(value);
+        newNode->next = top;
+        top = newNode;
+    }
+
+    // Remove and return the top value
     T pop() {
-        if (isEmpty()) throw runtime_error("Stack underflow"); // If the stack is empty, throw an exception
+        if (isEmpty()) {
+            throw runtime_error("Stack is empty!");
+        }
+
         Node<T>* temp = top;
         T value = temp->data;
         top = top->next;
         delete temp;
+
         return value;
     }
 
+    // Return the top value without removing it
     T peek() {
-        if (isEmpty()) throw runtime_error("Stack is empty");
+        if (isEmpty()) {
+            throw runtime_error("Stack is empty!");
+        }
+
         return top->data;
     }
 };
 
-#endif // it is used to end the header guard
-// This prevents the header file from being included multiple times in a single translation unit, which can cause redefinition errors.
+#endif

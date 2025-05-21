@@ -1,22 +1,22 @@
 # Expression Conversion System (C++)
 
-## 📌 Overview
+##  Overview
 This project implements **mathematical expression conversions** between **Infix, Postfix, and Prefix** using **Stacks (Singly Linked List & Templates)**.  
 Each conversion is handled in a **separate C++ file** for modularity and easier debugging.  
 
 ---
 
-## 🚀 Features
-✅ **Infix to Postfix (`infix_to_postfix.cpp`)**  
-✅ **Postfix to Infix (`postfix_to_infix.cpp`)**  
-✅ **Infix to Prefix (`infix_to_prefix.cpp`)**  
-✅ **Prefix to Infix (`prefix_to_infix.cpp`)**  
-✅ **Stack Implemented as a Singly Linked List (`stack.h`)**  
-✅ **File Handling for Expression Input/Output**  
+##  Features
+ **Infix to Postfix (`infix_to_postfix.cpp`)**  
+ **Postfix to Infix (`postfix_to_infix.cpp`)**  
+ **Infix to Prefix (`infix_to_prefix.cpp`)**  
+ **Prefix to Infix (`prefix_to_infix.cpp`)**  
+ **Stack Implemented as a Singly Linked List (`stack.h`)**  
+ **File Handling for Expression Input/Output**  
 
 ---
 
-## 📂 File Structure
+##  File Structure
 ```
 /ExpressionConverter
 │── infix.txt         # Input: Infix expression
@@ -34,29 +34,29 @@ Each conversion is handled in a **separate C++ file** for modularity and easier 
 
 ---
 
-## 🛠️ How to Compile & Run
+##  How to Compile & Run
 Each conversion has **its own separate program**.  
 To compile and run each file:
 
-### **1️⃣ Infix to Postfix**
+### **1️ Infix to Postfix**
 ```sh
 g++ infix_to_postfix.cpp -o infix_to_postfix
 ./infix_to_postfix
 ```
 
-### **2️⃣ Postfix to Infix**
+### **2 Postfix to Infix**
 ```sh
 g++ postfix_to_infix.cpp -o postfix_to_infix
 ./postfix_to_infix
 ```
 
-### **3️⃣ Infix to Prefix**
+### **3️ Infix to Prefix**
 ```sh
 g++ infix_to_prefix.cpp -o infix_to_prefix
 ./infix_to_prefix
 ```
 
-### **4️⃣ Prefix to Infix**
+### **4️ Prefix to Infix**
 ```sh
 g++ prefix_to_infix.cpp -o prefix_to_infix
 ./prefix_to_infix
@@ -64,7 +64,7 @@ g++ prefix_to_infix.cpp -o prefix_to_infix
 
 ---
 
-## 🎮 How It Works
+##  How It Works
 1️⃣ **Add an infix expression** to `infix.txt`.  
 2️⃣ **Run `infix_to_postfix`** → Converts and stores in `postfix.txt`.  
 3️⃣ **Run `postfix_to_infix`** → Converts back to infix and stores in `infix1.txt`.  
@@ -73,13 +73,13 @@ g++ prefix_to_infix.cpp -o prefix_to_infix
 
 ---
 
-## 📜 Example Input & Output
-### **📄 Input (`infix.txt`)**
+##  Example Input & Output
+### ** Input (`infix.txt`)**
 ```
 (A+B)*(C-D)
 ```
 
-### **📄 Expected Outputs**
+### ** Expected Outputs**
 | Conversion  | Output |
 |------------|------------|
 | **Postfix (`postfix.txt`)** | `AB+CD-*` |
@@ -89,20 +89,20 @@ g++ prefix_to_infix.cpp -o prefix_to_infix
 
 ---
 
-## 📌 Notes
+##  Notes
 - The **stack is implemented using a singly linked list** (`stack.h`).  
 - **Each file handles a specific conversion task separately**.  
 - **File handling is used** for input/output.  
 
 ---
 
-## 📜 License
+##  License
 This project is **free to use** for educational purposes.
 
 ---
 
-## 👨‍💻 Author
+##  Author
 **Sajidullah Khan**
 **4995-FOC/BSCS/F23-B**
-📍 **International Islamic University Islamabad**  
+ **International Islamic University Islamabad**  
 ```

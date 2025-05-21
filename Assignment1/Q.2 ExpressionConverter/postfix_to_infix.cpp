@@ -1,7 +1,7 @@
 #include <iostream>
-#include <fstream> // For file operations
+#include <fstream>  // For reading/writing files
 #include <string>
-#include "stack.h"
+#include "stack.h"  // Custom stack that supports push/pop/peek
 
 using namespace std;
 
@@ -9,36 +9,48 @@ using namespace std;
 string postfixToInfix(string postfix) {
     Stack<string> stack;
 
-    for (char ch : postfix) {
-        if (isalnum(ch)) {
-            stack.push(string(1, ch));
-        } else {
-            string op2 = stack.pop();
-            string op1 = stack.pop();
-            string expression = "(" + op1 + ch + op2 + ")";
-            stack.push(expression);
+    // Loop through each character in the postfix string
+    for (int i = 0; i < postfix.length(); i++) {
+        char ch = postfix[i];
+
+        // If the character is an operand (letter or digit)
+        if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || (ch >= '0' && ch <= '9')) {
+            string operand(1, ch);  // Convert char to string
+            stack.push(operand);    // Push operand to stack
+        } 
+        // If the character is an operator
+        else {
+            string right = stack.pop();  // Operand 2
+            string left = stack.pop();   // Operand 1
+
+            string expr = "(" + left + ch + right + ")";
+            stack.push(expr); // Push the complete expression back
         }
     }
 
-    return stack.pop();
+    return stack.pop(); // Final infix expression
 }
 
 int main() {
-    string postfixExp;
-    ifstream infile("postfix.txt");
-    ofstream outfile("infix1.txt");
+    ifstream infile("postfix.txt");     // File containing postfix expression
+    ofstream outfile("infix1.txt");     // Output file for infix result
 
     if (!infile || !outfile) {
-        cout << "Error opening files!" << endl;
+        cout << "Error: Could not open file!" << endl;
         return 1;
     }
 
-    getline(infile, postfixExp);
-    outfile << postfixToInfix(postfixExp);
+    string postfixExp;
+    getline(infile, postfixExp);            // Read postfix expression from file
 
-    cout << "Postfix to Infix conversion done.\n";
+    string infixExp = postfixToInfix(postfixExp); // Convert
+
+    outfile << infixExp;                    // Write result to output file
+
+    cout << "Postfix to Infix conversion completed.\n";
 
     infile.close();
     outfile.close();
+
     return 0;
 }

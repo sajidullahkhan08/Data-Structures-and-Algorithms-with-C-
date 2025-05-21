@@ -1,213 +1,179 @@
 #include <iostream>
-#include <cstring>
+#include <vector>
+#include <sstream>
+#include <string>
 using namespace std;
 
-const int MAX_CHILDREN = 10; // Max number of children for each folder
+class TreeNode {
+public:
+    string name;
+    string type; // "folder" or "file"
+    vector<TreeNode*> children;
 
-// Node structure
-struct Node {
-    char name[50];
-    bool isFile; // true = file, false = folder
-    Node* children[MAX_CHILDREN];
-    int childCount;
-    Node* parent;
+    TreeNode(string n, string t) {
+        name = n;
+        type = t;
+    }
+
+    // Find child folder by name
+    TreeNode* findChild(string childName) {
+        for (auto child : children) {
+            if (child->name == childName && child->type == "folder")
+                return child;
+        }
+        return nullptr;
+    }
 };
 
-// Create a new node
-Node* createNode(const char* name, bool isFile) {
-    Node* newNode = new Node;
-    strcpy(newNode->name, name);
-    newNode->isFile = isFile;
-    newNode->childCount = 0;
-    newNode->parent = NULL;
-    for (int i = 0; i < MAX_CHILDREN; i++)
-        newNode->children[i] = NULL;
-    return newNode;
-}
+class FileSystem {
+private:
+    TreeNode* root;
 
-// Find a node by path (e.g., root/documents/projects)
-Node* findNode(Node* root, const char* path) {
-    if (strcmp(path, "root") == 0) return root;
-    Node* current = root;
-    char temp[200];
-    strcpy(temp, path);
-    char* token = strtok(temp, "/");
-    token = strtok(NULL, "/"); // skip "root"
-    while (token && current) {
-        bool found = false;
-        for (int i = 0; i < current->childCount; i++) {
-            if (strcmp(current->children[i]->name, token) == 0) {
-                current = current->children[i];
-                found = true;
-                break;
+    // Helper: Split path by '/'
+    vector<string> splitPath(const string& path) {
+        vector<string> parts;
+        stringstream ss(path);
+        string token;
+        while (getline(ss, token, '/')) {
+            if (!token.empty()) parts.push_back(token);
+        }
+        return parts;
+    }
+
+    // Recursive display
+    void display(TreeNode* node, string indent = "") {
+        cout << indent << (node->type == "folder" ? "|-- " : "   - ") << node->name << endl;
+        if (node->type == "folder") {
+            for (auto child : node->children) {
+                display(child, indent + "    ");
             }
         }
-        if (!found) return NULL;
-        token = strtok(NULL, "/");
     }
-    return current;
-}
 
-// Add a folder
-void mkdir(Node* root, const char* path) {
-    char parentPath[200], folderName[50];
-    strcpy(parentPath, path);
-    char* lastSlash = strrchr(parentPath, '/');
-    if (lastSlash) {
-        strcpy(folderName, lastSlash + 1);
-        *lastSlash = '\0';
-    } else {
-        strcpy(folderName, path);
-        strcpy(parentPath, "root");
-    }
-    Node* parent = findNode(root, parentPath);
-    if (parent && !parent->isFile && parent->childCount < MAX_CHILDREN) {
-        Node* folder = createNode(folderName, false);
-        folder->parent = parent;
-        parent->children[parent->childCount++] = folder;
-    }
-}
-
-// Add a file
-void touch(Node* root, const char* path) {
-    char parentPath[200], fileName[50];
-    strcpy(parentPath, path);
-    char* lastSlash = strrchr(parentPath, '/');
-    if (lastSlash) {
-        strcpy(fileName, lastSlash + 1);
-        *lastSlash = '\0';
-    } else {
-        strcpy(fileName, path);
-        strcpy(parentPath, "root");
-    }
-    Node* parent = findNode(root, parentPath);
-    if (parent && !parent->isFile && parent->childCount < MAX_CHILDREN) {
-        Node* file = createNode(fileName, true);
-        file->parent = parent;
-        parent->children[parent->childCount++] = file;
-    }
-}
-
-// Display the tree recursively
-void display(Node* node, int level = 0) {
-    for (int i = 0; i < level; i++) cout << "|  ";
-    cout << "|-- " << node->name << (node->isFile ? "" : "/") << endl;
-    if (!node->isFile) {
-        for (int i = 0; i < node->childCount; i++) {
-            display(node->children[i], level + 1);
+    // Recursive search
+    void search(TreeNode* node, const string& target, bool& found) {
+        if (node->name == target) {
+            cout << "Found: " << node->name << " (" << node->type << ")\n";
+            found = true;
         }
+        for (auto child : node->children)
+            search(child, target, found);
     }
-}
 
-// Search by name
-bool search(Node* node, const char* target) {
-    if (strcmp(node->name, target) == 0) {
-        cout << "Found: " << node->name << (node->isFile ? " (file)" : " (folder)") << endl;
-        return true;
+    // Recursive count
+    void count(TreeNode* node, int& files, int& folders) {
+        if (node->type == "file") files++;
+        else folders++;
+        for (auto child : node->children)
+            count(child, files, folders);
     }
-    if (!node->isFile) {
-        for (int i = 0; i < node->childCount; i++) {
-            if (search(node->children[i], target)) return true;
+
+public:
+    FileSystem() {
+        root = new TreeNode("root", "folder");
+    }
+
+    // Create folder
+    void mkdir(string path) {
+        vector<string> parts = splitPath(path);
+        TreeNode* current = root;
+
+        for (int i = 1; i < parts.size(); ++i) {
+            TreeNode* child = current->findChild(parts[i]);
+            if (!child) {
+                TreeNode* newFolder = new TreeNode(parts[i], "folder");
+                current->children.push_back(newFolder);
+                current = newFolder;
+            } else {
+                current = child;
+            }
         }
+        cout << "Folder created: " << path << endl;
     }
-    return false;
-}
 
-// Count files and folders
-void countItems(Node* node, int& fileCount, int& folderCount) {
-    if (node->isFile)
-        fileCount++;
-    else
-        folderCount++;
+    // Create file
+    void touch(string path) {
+        vector<string> parts = splitPath(path);
+        TreeNode* current = root;
 
-    for (int i = 0; i < node->childCount; i++) {
-        countItems(node->children[i], fileCount, folderCount);
-    }
-}
-
-// Delete a file or folder
-bool deleteNode(Node* root, const char* path) {
-    Node* target = findNode(root, path);
-    if (!target || target == root) return false;
-    Node* parent = target->parent;
-    int index = -1;
-    for (int i = 0; i < parent->childCount; i++) {
-        if (parent->children[i] == target) {
-            index = i;
-            break;
+        for (int i = 1; i < parts.size() - 1; ++i) {
+            TreeNode* child = current->findChild(parts[i]);
+            if (!child) {
+                TreeNode* newFolder = new TreeNode(parts[i], "folder");
+                current->children.push_back(newFolder);
+                current = newFolder;
+            } else {
+                current = child;
+            }
         }
-    }
-    if (index == -1) return false;
 
-    // Recursively delete children if folder
-    if (!target->isFile) {
-        for (int i = 0; i < target->childCount; i++) {
-            deleteNode(target, target->children[i]->name);
-        }
-    }
-    // Shift children left
-    for (int i = index; i < parent->childCount - 1; i++) {
-        parent->children[i] = parent->children[i + 1];
-    }
-    parent->childCount--;
-    delete target;
-    return true;
-}
+        string fileName = parts.back();
+        TreeNode* newFile = new TreeNode(fileName, "file");
+        current->children.push_back(newFile);
 
-// Move a node
-bool moveNode(Node* root, const char* sourcePath, const char* destPath) {
-    Node* source = findNode(root, sourcePath);
-    Node* dest = findNode(root, destPath);
-    if (!source || !dest || dest->isFile || source == root || dest->childCount >= MAX_CHILDREN) return false;
-
-    // Detach from current parent
-    Node* parent = source->parent;
-    int index = -1;
-    for (int i = 0; i < parent->childCount; i++) {
-        if (parent->children[i] == source) {
-            index = i;
-            break;
-        }
+        cout << "File created: " << path << endl;
     }
-    for (int i = index; i < parent->childCount - 1; i++) {
-        parent->children[i] = parent->children[i + 1];
+
+    // Display tree
+    void displayTree() {
+        cout << "File System Tree:\n";
+        display(root);
     }
-    parent->childCount--;
 
-    // Attach to new parent
-    dest->children[dest->childCount++] = source;
-    source->parent = dest;
-    return true;
-}
+    // Search
+    void searchByName(string name) {
+        bool found = false;
+        search(root, name, found);
+        if (!found)
+            cout << "Not found: " << name << endl;
+    }
 
+    // Count
+    void countAll() {
+        int files = 0, folders = 0;
+        count(root, files, folders);
+        cout << "Total Folders: " << folders << ", Total Files: " << files << endl;
+    }
+};
+
+// ---------------- Main Driver ----------------
 int main() {
-    Node* root = createNode("root", false);
+    FileSystem fs;
+    int choice;
+    string command, path;
 
-    mkdir(root, "root/documents");
-    touch(root, "root/documents/resume.pdf");
-    mkdir(root, "root/photos");
-    touch(root, "root/photos/vacation.jpg");
-    touch(root, "root/photos/birthday.png");
-    mkdir(root, "root/documents/projects");
-    touch(root, "root/documents/projects/code.py");
+    do {
+        cout << "\n=== File System Menu ===\n";
+        cout << "1. Create Folder (mkdir)\n";
+        cout << "2. Create File (touch)\n";
+        cout << "3. Display File System\n";
+        cout << "4. Search for File/Folder\n";
+        cout << "5. Count Files and Folders\n";
+        cout << "0. Exit\n";
+        cout << "Enter choice: ";
+        cin >> choice;
+        cin.ignore();
 
-    cout << "File System:\n";
-    display(root);
+        if (choice == 1 || choice == 2) {
+            cout << "Enter full path (e.g., root/folder1/file.txt): ";
+            getline(cin, path);
+            if (choice == 1) fs.mkdir(path);
+            else fs.touch(path);
+        } else if (choice == 3) {
+            fs.displayTree();
+        } else if (choice == 4) {
+            cout << "Enter name to search: ";
+            getline(cin, path);
+            fs.searchByName(path);
+        } else if (choice == 5) {
+            fs.countAll();
+        } else if (choice == 0) {
+            cout << "Exiting...\n";
+        } else {
+            cout << "Invalid choice. Try again.\n";
+        }
 
-    cout << "\nSearching for 'code.py':\n";
-    if (!search(root, "code.py")) cout << "Not found\n";
-
-    int files = 0, folders = 0;
-    countItems(root, files, folders);
-    cout << "\nTotal Files: " << files << ", Folders: " << folders << endl;
-
-    cout << "\nDeleting 'root/photos/birthday.png'...\n";
-    deleteNode(root, "root/photos/birthday.png");
-    display(root);
-
-    cout << "\nMoving 'root/documents/projects' to 'root/photos'...\n";
-    moveNode(root, "root/documents/projects", "root/photos");
-    display(root);
+    } while (choice != 0);
 
     return 0;
 }

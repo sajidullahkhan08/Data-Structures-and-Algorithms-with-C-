@@ -1,174 +1,280 @@
 #include <iostream>
 #include <fstream>
+#include <string>
+#include <ctime>
 using namespace std;
 
-// ----------------------------
-// Process Node (Doubly Linked List)
-// ----------------------------
-class Process {
-public:
-    int PID;
-    int priority;
-    int arrivalTime;
-    Process* next;
-    Process* prev;
-
-    Process(int id, int p, int time) {
-        PID = id;
-        priority = p;
-        arrivalTime = time;
-        next = prev = nullptr;
+// Structure for storing time
+struct time {
+    int hour;
+    int minute;
+    int second;
+    
+    // Parse time from string (format: HH.MM.SS)
+    void parseTime(string timeStr) {
+        int pos1 = timeStr.find('.');
+        int pos2 = timeStr.rfind('.');
+        
+        hour = stoi(timeStr.substr(0, pos1));
+        minute = stoi(timeStr.substr(pos1 + 1, pos2 - pos1 - 1));
+        second = stoi(timeStr.substr(pos2 + 1));
+    }
+    
+    // Get current system time
+    void getCurrentTime() {
+        time_t now = ::time(0);
+        tm* ltm = localtime(&now);
+        hour = ltm->tm_hour;
+        minute = ltm->tm_min;
+        second = ltm->tm_sec;
+    }
+    
+    // Convert time to string
+    string toString() {
+        char buffer[9];
+        sprintf(buffer, "%02d.%02d.%02d", hour, minute, second);
+        return string(buffer);
+    }
+    
+    // Compare with another time
+    bool isLessThan(struct time t) {
+        if (hour != t.hour)
+            return hour < t.hour;
+        if (minute != t.minute)
+            return minute < t.minute;
+        return second < t.second;
     }
 };
 
-// ----------------------------
-// Process Queue (Doubly Linked List Implementation)
-// ----------------------------
-class ProcessQueue {
+// Process node for the doubly linked list
+struct Process {
+    string processName;
+    int priorityLevel;
+    struct time entryTime;
+    Process* next;
+    Process* prev;
+    
+    // Constructor
+    Process(string name, int priority, struct time entry) {
+        processName = name;
+        priorityLevel = priority;
+        entryTime = entry;
+        next = nullptr;
+        prev = nullptr;
+    }
+};
+
+// Priority Queue implementation using doubly linked list
+class PriorityQueue {
 private:
     Process* head;
+    Process* tail;
+    
 public:
-    ProcessQueue() { head = nullptr; }
-
-    // Enqueue (Insert process based on priority)
-    void enqueue(int id, int priority, int arrivalTime) {
-        Process* newProcess = new Process(id, priority, arrivalTime);
-
+    // Constructor
+    PriorityQueue() {
+        head = nullptr;
+        tail = nullptr;
+    }
+    
+    // Destructor
+    ~PriorityQueue() {
+        Process* current = head;
+        while (current != nullptr) {
+            Process* temp = current;
+            current = current->next;
+            delete temp;
+        }
+    }
+    
+    // Check if queue is empty
+    bool isEmpty() {
+        return head == nullptr;
+    }
+    
+    // Enqueue a process based on priority and entry time
+    void enqueue(string name, int priority, struct time entry) {
+        Process* newProcess = new Process(name, priority, entry);
+        
         // If queue is empty
-        if (!head) {
-            head = newProcess;
+        if (isEmpty()) {
+            head = tail = newProcess;
             return;
         }
-
-        Process* current = head;
-        Process* prev = nullptr;
-
-        // Find the correct position based on priority & arrival time
-        while (current && (current->priority > priority || 
-              (current->priority == priority && current->arrivalTime <= arrivalTime))) {
-            prev = current;
-            current = current->next;
-        }
-
-        // Insert at the beginning
-        if (!prev) {
+        
+        // If new process has higher priority than head
+        if (priority > head->priorityLevel) {
             newProcess->next = head;
             head->prev = newProcess;
             head = newProcess;
-        } 
-        // Insert at the correct position
-        else {
-            newProcess->next = current;
-            newProcess->prev = prev;
-            prev->next = newProcess;
-            if (current) current->prev = newProcess;
-        }
-    }
-
-    // Dequeue (Remove highest-priority process)
-    void dequeue() {
-        if (!head) {
-            cout << "Queue is empty!\n";
             return;
         }
-
+        
+        // Find position to insert based on priority and entry time
+        Process* current = head;
+        
+        while (current != nullptr) {
+            // Found position based on priority
+            if (current->priorityLevel < priority) {
+                break;
+            }
+            
+            // Same priority, check entry time
+            if (current->priorityLevel == priority && 
+                !current->entryTime.isLessThan(entry)) {
+                break;
+            }
+            
+            current = current->next;
+        }
+        
+        // Insert at the end
+        if (current == nullptr) {
+            tail->next = newProcess;
+            newProcess->prev = tail;
+            tail = newProcess;
+        }
+        // Insert in the middle or at the beginning
+        else {
+            if (current->prev != nullptr) {
+                // In the middle
+                current->prev->next = newProcess;
+                newProcess->prev = current->prev;
+            } else {
+                // At the beginning
+                head = newProcess;
+            }
+            
+            newProcess->next = current;
+            current->prev = newProcess;
+        }
+    }
+    
+    // Dequeue highest priority process
+    void dequeue() {
+        if (isEmpty()) {
+            cout << "Queue is empty!" << endl;
+            return;
+        }
+        
         Process* temp = head;
-        head = head->next;
-        if (head) head->prev = nullptr;
-
-        cout << "Dequeued Process - PID: " << temp->PID << ", Priority: " << temp->priority << endl;
+        
+        // If only one process
+        if (head == tail) {
+            head = tail = nullptr;
+        } else {
+            head = head->next;
+            head->prev = nullptr;
+        }
+        
+        cout << "Removed Process: " << temp->processName 
+             << ", Priority: " << temp->priorityLevel 
+             << ", Entry Time: " << temp->entryTime.toString() << endl;
+        
         delete temp;
     }
-
-    // Display Queue
-    void displayQueue() {
-        if (!head) {
-            cout << "Queue is empty!\n";
+    
+    // Display all processes in the queue
+    void display() {
+        if (isEmpty()) {
+            cout << "Queue is empty!" << endl;
             return;
         }
-
-        cout << "\nCurrent Process Queue:\n";
-        cout << "PID\tPriority\tArrival Time\n";
-        for (Process* temp = head; temp; temp = temp->next) {
-            cout << temp->PID << "\t" << temp->priority << "\t\t" << temp->arrivalTime << endl;
+        
+        cout << "\nProcess Queue Contents:" << endl;
+        cout << "Process Name\tPriority\tEntry Time" << endl;
+        cout << "----------------------------------------" << endl;
+        
+        Process* current = head;
+        while (current != nullptr) {
+            cout << current->processName << "\t\t" 
+                 << current->priorityLevel << "\t\t" 
+                 << current->entryTime.toString() << endl;
+            current = current->next;
         }
     }
-
-    // Read from file (Load processes into queue)
+    
+    // Read processes from file
     void readFromFile(string filename) {
         ifstream file(filename);
-        if (!file) {
-            cout << "Error: Cannot open file " << filename << endl;
+        
+        if (!file.is_open()) {
+            cout << "Error: Unable to open file " << filename << endl;
             return;
         }
-
-        int id, priority, arrivalTime;
-        while (file >> id >> priority >> arrivalTime) {
-            enqueue(id, priority, arrivalTime);
+        
+        string name;
+        int priority;
+        string timeStr;
+        
+        while (file >> name >> priority >> timeStr) {
+            struct time entryTime;
+            entryTime.parseTime(timeStr);
+            
+            enqueue(name, priority, entryTime);
         }
-
+        
         file.close();
-    }
-
-    // Write queue to file
-    void writeToFile(string filename) {
-        ofstream file(filename);
-        if (!file) {
-            cout << "Error: Cannot write to file " << filename << endl;
-            return;
-        }
-
-        for (Process* temp = head; temp; temp = temp->next) {
-            file << temp->PID << " " << temp->priority << " " << temp->arrivalTime << endl;
-        }
-
-        file.close();
+        cout << "Processes loaded from file successfully." << endl;
     }
 };
 
-// ----------------------------
-// Main Function (User Interface)
-// ----------------------------
 int main() {
-    ProcessQueue queue;
-    queue.readFromFile("process.txt");
-
+    PriorityQueue pq;
+    
+    // Read processes from file
+    pq.readFromFile("process.txt");
+    
     int choice;
+    
     do {
-        cout << "\n--- Process Queue Management ---\n";
-        cout << "1. Enqueue Process\n";
-        cout << "2. Dequeue Process\n";
-        cout << "3. Display Queue\n";
-        cout << "4. Save & Exit\n";
-        cout << "Enter choice: ";
+        cout << "\nPriority Queue Operations:" << endl;
+        cout << "1. Display all processes" << endl;
+        cout << "2. Add a new process" << endl;
+        cout << "3. Remove highest priority process" << endl;
+        cout << "0. Exit" << endl;
+        cout << "Enter your choice: ";
         cin >> choice;
-
+        cin.ignore(); 
+        
         switch (choice) {
-            case 1: {
-                int id, priority, arrival;
-                cout << "Enter Process ID: ";
-                cin >> id;
-                cout << "Enter Priority (higher value = higher priority): ";
+            case 1:
+                pq.display();
+                break;
+                
+            case 2: {
+                string name;
+                int priority;
+                
+                cout << "Enter Process Name: ";
+                getline(cin, name);
+                
+                cout << "Enter Priority Level: ";
                 cin >> priority;
-                cout << "Enter Arrival Time: ";
-                cin >> arrival;
-                queue.enqueue(id, priority, arrival);
+                
+                // Get current system time for entry time
+                struct time currentTime;
+                currentTime.getCurrentTime();
+                
+                pq.enqueue(name, priority, currentTime);
+                cout << "Process added successfully with entry time: " 
+                     << currentTime.toString() << endl;
                 break;
             }
-            case 2:
-                queue.dequeue();
-                break;
+                
             case 3:
-                queue.displayQueue();
+                pq.dequeue();
                 break;
-            case 4:
-                queue.writeToFile("process.txt");
-                cout << "Queue saved. Exiting...\n";
+                
+            case 0:
+                cout << "Exiting program..." << endl;
                 break;
+                
             default:
-                cout << "Invalid choice! Try again.\n";
+                cout << "Invalid choice! Please try again." << endl;
         }
-    } while (choice != 4);
-
+        
+    } while (choice != 0);
+    
     return 0;
 }

@@ -16,8 +16,10 @@ struct Student {
 class StudentHashTable {
 private:
     int size;
-    Student** table; // array of pointers to Student
+    Student** table; 
 
+    // Hash function to compute index
+    // Hash function: roll number % size of the table  
     int hashFunction(int roll) {
         return roll % size;
     }
