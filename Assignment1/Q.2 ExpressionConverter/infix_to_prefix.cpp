@@ -24,7 +24,7 @@ string reverseString(string& str) {
 string infixToPrefix(string infix) {
     infix = reverseString(infix);
 
-    for (int i = 0; i < infix.length(); i++){
+    for(int i = 0; i < infix.length(); i++){
         if(infix[i] =='(')
             infix[i] = ')';
         else if(infix[i] ==')')
