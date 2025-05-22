@@ -45,7 +45,7 @@ private:
                     parts[count++] = temp;
                     temp = "";
                 }
-            } else {
+            } else{
                 temp += ch;
             }
         }
