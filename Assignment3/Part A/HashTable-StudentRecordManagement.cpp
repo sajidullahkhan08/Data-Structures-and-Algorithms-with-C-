@@ -1,43 +1,38 @@
 // Part A: Student Record Management using Hash Table
 #include <iostream>
-#include <cstring> // for strcpy
+#include <string>
 using namespace std;
 
-// Structure for each Student
-struct Student {
+struct Student{
     int rollNumber;
-    char name[50];
-    char department[30];
+    string name;
+    string department;
     float cgpa;
-    Student* next; // for chaining
+    Student* next;
 };
 
-// Hash Table class
 class StudentHashTable {
 private:
     int size;
-    Student** table; 
+    Student** table;
 
-    // Hash function to compute index
-    // Hash function: roll number % size of the table  
-    int hashFunction(int roll) {
-        return roll % size;
-    }
+    int hashFunction(int roll){
+        return roll % size;}
 
 public:
-    StudentHashTable(int s) {
+    StudentHashTable(int s){
         size = s;
         table = new Student*[size];
-        for (int i = 0; i < size; i++) table[i] = nullptr;
+        for (int i = 0; i < size; i++) table[i] = NULL;
     }
 
-    void insert(int roll, const char* name, const char* dept, float cgpa) {
+    void insert(int roll, string& name, string& dept, float cgpa) {
         int index = hashFunction(roll);
         Student* newStudent = new Student;
         newStudent->rollNumber = roll;
         newStudent->cgpa = cgpa;
-        strcpy(newStudent->name, name);
-        strcpy(newStudent->department, dept);
+        newStudent->name = name;
+        newStudent->department = dept;
         newStudent->next = table[index];
         table[index] = newStudent;
         cout << "Student inserted successfully.\n";
@@ -63,7 +58,7 @@ public:
     void deleteRecord(int roll) {
         int index = hashFunction(roll);
         Student* current = table[index];
-        Student* prev = nullptr;
+        Student* prev = NULL;
         while (current) {
             if (current->rollNumber == roll) {
                 if (prev)
@@ -121,13 +116,13 @@ int main() {
 
         if (choice == 1) {
             int roll;
-            char name[50], dept[30];
             float cgpa;
-            cout << "Enter Roll Number: "; cin >> roll;
+            cout<<"Enter Roll Number: "; cin >> roll;
             cin.ignore();
-            cout << "Enter Name: "; cin.getline(name, 50);
-            cout << "Enter Department: "; cin.getline(dept, 30);
-            cout << "Enter CGPA: "; cin >> cgpa;
+            string name, dept;
+            cout<<"Enter Name: "; getline(cin, name);
+            cout<<"Enter Department: "; getline(cin, dept);
+            cout<<"Enter CGPA: "; cin >> cgpa;
             ht.insert(roll, name, dept, cgpa);
         } else if (choice == 2) {
             int roll;
@@ -142,9 +137,7 @@ int main() {
         } else if (choice != 5) {
             cout << "Invalid choice. Try again.\n";
         }
-
     } while (choice != 5);
-
     cout << "Program exited.\n";
     return 0;
 }
