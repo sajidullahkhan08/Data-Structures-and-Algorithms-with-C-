@@ -26,45 +26,44 @@ public:
         Road* newRoad = new Road{dest, dist, cities[src].adjList};
         cities[src].adjList = newRoad;}
 
-    void addCity(string& name) {
+    void addCity(string& name){
         if(cityCount >= 50){
             cout << "City limit reached!\n";
             return;
         }
-        if (findCityIndex(name) != -1) {
+        if(findCityIndex(name) != -1) {
             cout << "City already exists.\n";
             return;
         }
         cities[cityCount].name = name;
-        cities[cityCount].adjList = nullptr;
+        cities[cityCount].adjList = NULL;
         cityCount++;
-        cout << "City added.\n";
+        cout<<"City added.\n";
     }
 
-    void addRoad(string& from, string& to, int dist) {
-        int srcIdx = findCityIndex(from);
-        int destIdx = findCityIndex(to);
-        if (srcIdx == -1 || destIdx == -1) {
-            cout << "One or both cities not found.\n";
+    void addRoad(string& from, string& to, int dist){
+        int srcIndex = findCityIndex(from);
+        int destIndex = findCityIndex(to);
+        if(srcIndex == -1 || destIndex == -1){
+            cout<<"One or both cities not found.\n";
             return;
         }
-        addRoadHelper(srcIdx, destIdx, dist);
-        addRoadHelper(destIdx, srcIdx, dist);
-        cout << "Road added between " << from << " and " << to << " (" << dist << " km)\n";
+        addRoadHelper(srcIndex, destIndex, dist);
+        addRoadHelper(destIndex, srcIndex, dist);
+        cout<<"Road added between "<< from<< " and " << to << " (" << dist << " km)\n";
     }
 
     void deleteRoad(string& from, string& to) {
-        int srcIdx = findCityIndex(from);
-        int destIdx = findCityIndex(to);
-        if (srcIdx == -1 || destIdx == -1) {
-            cout << "City not found.\n";
+        int srcIndex = findCityIndex(from);
+        int destIndex = findCityIndex(to);
+        if(srcIndex == -1 || destIndex == -1) {
+            cout <<"City not found.\n";
             return;
         }
 
-        // Delete road from src to dest
-        Road** curr = &cities[srcIdx].adjList;
-        while (*curr) {
-            if ((*curr)->dest == destIdx) {
+        Road** curr = &cities[srcIndex].adjList;
+        while(*curr){
+            if((*curr)->dest == destIndex){
                 Road* temp = *curr;
                 *curr = (*curr)->next;
                 delete temp;
@@ -72,11 +71,9 @@ public:
             }
             curr = &(*curr)->next;
         }
-
-        // Delete road from dest to src
-        curr = &cities[destIdx].adjList;
-        while (*curr) {
-            if ((*curr)->dest == srcIdx) {
+        curr = &cities[destIndex].adjList;
+        while(*curr) {
+            if((*curr)->dest == srcIndex){
                 Road* temp = *curr;
                 *curr = (*curr)->next;
                 delete temp;
@@ -84,58 +81,52 @@ public:
             }
             curr = &(*curr)->next;
         }
-        cout << "Road deleted between " << from << " and " << to << ".\n";
+        cout<<"Road deleted between "<<from<<" and "<<to<<".\n";
     }
 
-    void deleteCity(string& name) {
-        int idx = findCityIndex(name);
-        if (idx == -1) {
-            cout << "City not found.\n";
-            return;
-        }
+    void deleteCity(string& name){
+        int index = findCityIndex(name);
+        if(index == -1){
+            cout<<"City not found.\n";
+            return;}
 
-        // Remove all roads to this city
-        for (int i = 0; i < cityCount; ++i) {
-            if (i == idx) continue;
+        for(int i=0; i< cityCount; ++i){
+            if(i == index) continue;
             Road** curr = &cities[i].adjList;
-            while (*curr) {
-                if ((*curr)->dest == idx) {
+            while(*curr){
+                if((*curr)->dest == index) {
                     Road* temp = *curr;
                     *curr = (*curr)->next;
                     delete temp;
                     continue;
                 }
-                if ((*curr)->dest > idx) (*curr)->dest--; // adjust indices
+                if((*curr)->dest > index) (*curr)->dest--;
                 curr = &(*curr)->next;
             }
         }
-
-        // Delete all roads from this city
-        Road* r = cities[idx].adjList;
-        while (r) {
-            Road* temp = r;
+        Road* r = cities[index].adjList;
+        while(r){
+            Road* temp =r;
             r = r->next;
             delete temp;
         }
-
-        // Shift cities left
-        for (int i = idx; i < cityCount - 1; ++i) {
+        for(int i = index; i < cityCount - 1; ++i){
             cities[i] = cities[i + 1];
         }
         cityCount--;
-        cout << "City deleted.\n";
+        cout<<"City deleted successfully.\n";
     }
 
-    void displayGraph() {
-        cout << "\n--- City Graph ---\n";
-        for (int i = 0; i < cityCount; i++) {
-            cout << cities[i].name << " -> ";
+    void displayGraph(){
+        cout<< "\n--- City Graph ---\n";
+        for(int i = 0; i < cityCount; i++){
+            cout<< cities[i].name << " -> ";
             Road* r = cities[i].adjList;
-            while (r) {
-                cout << cities[r->dest].name << "(" << r->distance << "km) -> ";
+            while(r){
+                cout<<cities[r->dest].name<<"(" << r->distance << "km) -> ";
                 r = r->next;
             }
-            cout << "NULL\n";
+            cout<<"NULL\n";
         }
     }
 
@@ -167,7 +158,7 @@ public:
                     u = i;
             }
 
-            if (dist[u] == 50) break; // remaining unreachable
+            if (dist[u] == 50) break;
             visited[u] = true;
 
             for (Road* r = cities[u].adjList; r != nullptr; r = r->next) {
