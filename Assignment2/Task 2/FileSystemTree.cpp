@@ -36,6 +36,11 @@ class FileSystem {
 private:
     TreeNode* root;
 
+public:
+    FileSystem() {
+        root = new TreeNode("root", "folder");
+    }
+
     int splitPath(string& path, string parts[]) {
         int count = 0;
         string temp = "";
@@ -75,11 +80,6 @@ private:
         else folders++;
         for (int i = 0; i < node->childCount; ++i)
             count(node->children[i], files, folders);
-    }
-
-public:
-    FileSystem() {
-        root = new TreeNode("root", "folder");
     }
 
     void mkdir(string path) {
