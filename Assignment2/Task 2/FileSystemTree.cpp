@@ -5,7 +5,7 @@ using namespace std;
 class TreeNode {
 public:
     string name;
-    string type; // folder or file
+    string type;
     TreeNode* children[50];
     int childCount;
 
@@ -61,7 +61,7 @@ private:
         }
     }
 
-    void search(TreeNode* node, const string& target, bool& found) {
+    void search(TreeNode* node, string& target, bool& found) {
         if (node->name == target) {
             cout << "Found: " << node->name << " (" << node->type << ")\n";
             found = true;
