@@ -1,77 +1,78 @@
 #include <iostream>
 #include <fstream>
-#include "stack.h"  // Custom stack implementation
+#include "stack.h"
 
 using namespace std;
 
-// Convert infix to postfix expression
-string infixToPostfix(string infix) {
+bool isOperand(char ch){
+    return ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '^';
+}
+int precedence(char op){
+    if(op=='^') return 3;
+    if(op=='*' || op=='/') return 2;
+    if(op=='+' || op=='-') return 1;
+    return 0; }
+
+string reverseString(string& str) {
+    string rev = "";
+    for (int i = str.length() - 1; i >= 0; i--) {
+        rev += str[i];
+    }
+    return rev;
+}
+
+string infixToPrefix(string infix) {
+    infix = reverseString(infix);
+
+    for (int i = 0; i < infix.length(); i++){
+        if(infix[i] =='(')
+            infix[i] = ')';
+        else if(infix[i] ==')')
+            infix[i] ='(';
+    }
     Stack<char> stack;
     string postfix = "";
-
-    for (int i = 0; i < infix.length(); i++) {
-        char ch = infix[i];
-
-        // If character is a letter or digit (operand)
-        if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || (ch >= '0' && ch <= '9')) {
+    for (char ch : infix){
+        if(isOperand(ch)){
             postfix += ch;
         }
-        // If character is opening bracket
-        else if (ch == '(') {
+        else if(ch=='('){
             stack.push(ch);
         }
-        // If character is closing bracket
-        else if (ch == ')') {
+        else if (ch ==')'){
             while (!stack.isEmpty() && stack.peek() != '(') {
                 postfix += stack.pop();
             }
-            stack.pop(); // Remove '(' from the stack
+            if (!stack.isEmpty()) stack.pop();
         }
-        // If character is operator
-        else if (ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '^') {
-            while (!stack.isEmpty()) {
-                char top = stack.peek();
-                int prec1 = (ch == '^') ? 3 : (ch == '*' || ch == '/') ? 2 : 1;
-                int prec2 = (top == '^') ? 3 : (top == '*' || top == '/') ? 2 : (top == '+' || top == '-') ? 1 : 0;
-
-                if (prec2 >= prec1) {
-                    postfix += stack.pop();
-                } else {
-                    break;
-                }
+        else {
+            while (!stack.isEmpty() && precedence(stack.peek()) >= precedence(ch)) {
+                postfix += stack.pop();
             }
             stack.push(ch);
         }
     }
-
-    // Pop all remaining operators from the stack
     while (!stack.isEmpty()) {
-        postfix += stack.pop();
+        postfix += stack.pop(); 
     }
-
-    return postfix;
+    string prefix = reverseString(postfix);
+    return prefix;
 }
 
-int main() {
-    ifstream infile("infix.txt");   // Read input from file
-    ofstream outfile("postfix.txt"); // Write output to file
+int main(){
+    ifstream infile("infix.txt");
+    ofstream outfile("prefix.txt");
 
     if (!infile || !outfile) {
-        cout << "Error opening files!" << endl;
+        cout << "Error in   opening files!"<<endl;
         return 1;
     }
-
     string infixExp;
-    getline(infile, infixExp); // Read the infix expression from file
-
-    string postfixExp = infixToPostfix(infixExp); // Convert it
-
-    outfile << postfixExp; // Write result to file
-
-    cout << "Conversion successful. Check postfix.txt" << endl;
-
+    getline(infile, infixExp);
+    string prefixExp = infixToPrefix(infixExp);
+    outfile << prefixExp;
+    cout << "Conversion successful. Check prefix.txt" << endl;
     infile.close();
     outfile.close();
-
     return 0;
 }

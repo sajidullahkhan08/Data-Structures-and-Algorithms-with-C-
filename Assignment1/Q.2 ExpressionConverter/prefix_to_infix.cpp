@@ -1,19 +1,26 @@
 #include <iostream>
 #include <fstream> // For file operations
 #include <string>
-#include <algorithm> // for reverse function used in prefixToInfix
 #include "stack.h"
 
 using namespace std;
 
-// Function to convert prefix to infix
+string reverseString(string& str){
+     string rev = "";
+    for (int i = str.length() - 1; i >= 0; i--){
+        rev += str[i];
+    }
+    return rev;
+}
 string prefixToInfix(string prefix) {
     Stack<string> stack;
-    reverse(prefix.begin(), prefix.end());
+    reverseString(prefix);
 
-    for (char ch : prefix) {
-        if (isalnum(ch)) {
-            stack.push(string(1, ch));
+    for (int i = 0; i < prefix.length(); i++) {
+        char ch = prefix[i];
+        if ((ch>='a' && ch<='z') || (ch>='A' && ch<='Z') || (ch>='0' && ch<='9')) {
+            string operand(1, ch);
+            stack.push(operand);
         } else {
             string op1 = stack.pop();
             string op2 = stack.pop();
@@ -21,25 +28,22 @@ string prefixToInfix(string prefix) {
             stack.push(expression);
         }
     }
-
-    return stack.pop();
+    return stack.pop(); 
 }
 
 int main() {
-    string prefixExp;
     ifstream infile("prefix.txt");
     ofstream outfile("infix2.txt");
 
-    if (!infile || !outfile) {
-        cout << "Error opening files!" << endl;
+    if(!infile || !outfile) {
+        cout << "Error in opening files!" << endl;
         return 1;
     }
-
+    string prefixExp;
     getline(infile, prefixExp);
-    outfile << prefixToInfix(prefixExp);
-
+    string infixExp = prefixToInfix(prefixExp);
+    outfile << infixExp;
     cout << "Prefix to Infix conversion done.\n";
-
     infile.close();
     outfile.close();
     return 0;

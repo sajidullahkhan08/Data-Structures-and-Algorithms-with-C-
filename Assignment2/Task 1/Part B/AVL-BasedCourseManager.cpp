@@ -244,8 +244,12 @@ int main() {
 }
 
 /* Discussion: Why AVL Rebalancing Improves Lookup Performance?
-In a normal Binary Search Tree (BST), if we insert nodes in sorted or nearly sorted order, the tree becomes skewed — like a linked list — making search, insertion, and deletion operations slower (O(n)).
+In a normal Binary Search Tree (BST), if we insert nodes in sorted or nearly sorted order, 
+the tree becomes skewed — like a linked list — making search, insertion, and deletion operations slower (O(n)).
 
-An AVL Tree solves this problem by automatically rebalancing itself after every insertion and deletion. It ensures that the height difference (balance factor) between the left and right subtrees of any node stays within -1, 0, or +1.
+An AVL Tree solves this problem by automatically rebalancing itself after every insertion and deletion. 
+It ensures that the height difference (balance factor) between the left and right subtrees of any node stays within -1, 0, or +1.
 
-This self-balancing keeps the tree height-balanced, maintaining logarithmic height — which ensures that search, insert, and delete operations all run in O(log n) time. As a result, even with large amounts of data, the system remains consistently fast and efficient for course lookups.*/
+This self-balancing keeps the tree height-balanced, maintaining logarithmic height, 
+which ensures that search, insert, and delete operations all run in O(log n) time. As a result, even with large amounts of data, 
+the system remains consistently fast and efficient for course lookups.*/

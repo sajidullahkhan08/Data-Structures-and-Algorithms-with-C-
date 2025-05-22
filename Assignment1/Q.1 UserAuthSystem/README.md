@@ -5,11 +5,8 @@ This is a **User Authentication and Profile Management System** implemented in *
 - **User Registration & Login**
 - **Profile Management (Read & Overwrite)**
 - **File Handling (storing users & profiles)**
-- **Robust Input Validation (prevents crashes)**
 - **User-Friendly Menus with "Go Back" Options**
-
 ---
-
 ##  Features
  **Register a New User**
 - Users provide a **unique username** and **numeric password** (10000-65000).
@@ -33,7 +30,6 @@ This is a **User Authentication and Profile Management System** implemented in *
 - Users can **return to the main menu** instead of being forced to exit.
 
 ---
-
 ##  File Structure
 ```
 /UserAuthSystem
@@ -41,20 +37,6 @@ This is a **User Authentication and Profile Management System** implemented in *
 │── users.txt       # Stores usernames & passwords
 │── [username].txt  # Stores user profiles (e.g., sajid.txt)
 │── README.md       # Documentation
-```
-
----
-
-##  Installation & Setup
-### **1️ Compile the Program**
-Open **VS Code terminal** (or command prompt) and run:
-```sh
-g++ main.cpp -o user_auth_system
-```
-
-### **2️ Run the Program**
-```sh
-./user_auth_system
 ```
 ---
 
@@ -131,30 +113,9 @@ Enter password: 54321
 Invalid credentials. Try again or register first.
 Would you like to register instead? (1 for Yes, 2 for No): 1
 ```
-
 ---
 
-##  Notes
-- User credentials are stored in **plain text** (`users.txt`).
-- Each user has a separate **profile file** (`username.txt`).
-- The program **prevents crashes** by ensuring valid numeric inputs.
-- `"Go Back"` options allow **smooth navigation** between menus.
-
----
-
-##  Future Improvements (Optional)
--  **Encrypt passwords** instead of storing them in plain text.
--  **Store user data in a database** instead of text files.
--  **Create a GUI version** using C++ frameworks.
-
----
-
-##  License
-This project is **free to use** for learning purposes.
-
----
-
-## 👨 Author
+##  Author
 **Sajidullah Khan**
 **4995-FOC/BSCS/F23-B**  
  **International Islamic University Islamabad**  

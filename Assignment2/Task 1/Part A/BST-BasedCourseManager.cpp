@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+
 using namespace std;
 
 class CourseNode {
@@ -10,102 +11,99 @@ public:
     CourseNode* left;
     CourseNode* right;
 
-    CourseNode(int id, string name, int credits) {
+    CourseNode(int id, string name, int credits){
         courseID = id;
         courseName = name;
         creditHours = credits;
-        left = right = nullptr;
-    }
+        left = right = NULL;}
 };
 
 class BSTCourseManager {
 public:
     CourseNode* root;
 
-    BSTCourseManager() {
-        root = nullptr;
+    BSTCourseManager(){
+        root = NULL;
     }
 
-    CourseNode* insert(CourseNode* node, int id, string name, int credits) {
-        if (node == nullptr)
-            return new CourseNode(id, name, credits);
-
-        if (id < node->courseID)
-            node->left = insert(node->left, id, name, credits);
+void insert(int id, string name, int credits){
+    CourseNode* newNode = new CourseNode(id, name, credits);
+    if (root == NULL) {
+        root = newNode;
+        return;
+    }
+    CourseNode* parent = NULL;
+    CourseNode* current = root;
+    while (current != NULL) {
+        parent = current;
+        if (id < current->courseID)
+            current = current->left;
         else
-            node->right = insert(node->right, id, name, credits);
-        return node;
+            current = current->right;
     }
-
-    void addCourse(int id, string name, int credits) {
-        root = insert(root, id, name, credits);
-        cout << "Course added.\n";
-    }
-
+    if (id < parent->courseID)
+        parent->left = newNode;
+    else
+        parent->right = newNode;
+}
+void addCourse(int id, string name, int credits){
+    insert(id, name, credits);
+    cout << "Course is added.\n";
+}
     void inorder(CourseNode* node) {
-        if (node) {
+        if(node){
             inorder(node->left);
             displayCourse(node);
             inorder(node->right);
         }
     }
-
     void displayAllCourses() {
-        cout << "\n--- All Courses (Inorder) ---\n";
+        cout<< "\n--- All Courses (Inorder) ---\n";
         inorder(root);
         cout << "-----------------------------\n";
     }
-
-    CourseNode* search(CourseNode* node, int id) {
-        if (!node || node->courseID == id)
+    CourseNode* search(CourseNode* node, int id){
+        if(!node || node->courseID == id)
             return node;
-        if (id < node->courseID)
+        if(id < node->courseID)
             return search(node->left, id);
         else
             return search(node->right, id);
     }
-
-    void searchCourse(int id) {
+    void searchCourse(int id){
         CourseNode* found = search(root, id);
         if (found)
             displayCourse(found);
         else
             cout << "Course not found.\n";
     }
-
-    CourseNode* findMin(CourseNode* node) {
+    CourseNode* findMin(CourseNode* node){
         while (node && node->left)
             node = node->left;
         return node;
     }
-
-    CourseNode* findMax(CourseNode* node) {
+    CourseNode* findMax(CourseNode* node){
         while (node && node->right)
             node = node->right;
         return node;
     }
-
-    void displayMinMax() {
+    void displayMinMax(){
         CourseNode* minNode = findMin(root);
         CourseNode* maxNode = findMax(root);
         if (minNode && maxNode) {
-            cout << "Minimum Course ID: " << minNode->courseID << endl;
-            cout << "Maximum Course ID: " << maxNode->courseID << endl;
+            cout << "Minimum Course ID: " << minNode->courseID <<endl;
+            cout << "Maximum Course ID: " << maxNode->courseID <<endl;
         }
     }
-
-    int count(CourseNode* node) {
+    int count(CourseNode* node){
         if (!node) return 0;
         return 1 + count(node->left) + count(node->right);
     }
-
-    void countCourses() {
+    void countCourses(){
         cout << "Total Courses: " << count(root) << endl;
     }
-
     CourseNode* deleteCourse(CourseNode* node, int id) {
-        if (!node) return nullptr;
-
+        if (!node) return NULL;
         if (id < node->courseID)
             node->left = deleteCourse(node->left, id);
         else if (id > node->courseID)
@@ -113,7 +111,7 @@ public:
         else {
             if (!node->left && !node->right) {
                 delete node;
-                return nullptr;
+                return NULL;
             }
             else if (!node->left) {
                 CourseNode* temp = node->right;
@@ -133,7 +131,6 @@ public:
         }
         return node;
     }
-
     void deleteCourse(int id) {
         root = deleteCourse(root, id);
         cout << "Course deleted if existed.\n";
@@ -155,16 +152,15 @@ int main() {
         cout << "1. Add Course\n";
         cout << "2. Delete Course\n";
         cout << "3. Search Course\n";
-        cout << "4. Display All Courses\n";
+        cout << "4. Display All Courses in Ascending order of Course ID\n";
         cout << "5. Count Total Courses\n";
         cout << "6. Find Min and Max Course ID\n";
         cout << "0. Exit\n";
         cout << "Enter choice: ";
         cin >> choice;
 
-        if (choice == 0) break;
-
-        if (choice == 1) {
+        if(choice == 0) break;
+        if(choice == 1){
             int id, credit;
             string name;
             cout << "Enter Course ID: "; cin >> id;
@@ -190,7 +186,6 @@ int main() {
             cout << "Invalid choice. Try again.\n";
         }
     }
-
     cout << "Exiting program.\n";
     return 0;
 }

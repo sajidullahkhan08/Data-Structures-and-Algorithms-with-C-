@@ -12,50 +12,43 @@ private:
     int age;
 
 public:
-    User() {
-        username = "";
-        password = 0;
-    }
+    User(){
+        username="";
+        password=0; }
 
-    // Simple numeric input (assumes user inputs correctly)
-    int getNumber() {
-        int num;
-        cin >> num;
-        return num;
-    }
-
-    // Check if username is already taken
-    bool isUniqueUsername(string uname) {
+    bool isUniqueUsername(string uname){
         ifstream file("users.txt");
         string user;
         int pass;
 
-        while (file >> user >> pass) {
-            if (user == uname) {
+        while (file >> user >> pass){
+            if(user == uname){
                 return false;
             }
         }
         return true;
     }
 
-    // Register new user
-    bool registerUser() {
+    // it is for reegistering new user
+    bool registerUser(){
         while (true) {
             cout << "\nEnter a username to register (or type 4 to go back): ";
-            cin >> username;
+            cin>>username;
+            if (username == "4") 
+            return false;
 
-            if (username == "4") return false;
-
-            if (!isUniqueUsername(username)) {
+            if(!isUniqueUsername(username)) 
+            {
                 cout << "That username is already taken. Try another one.\n";
                 continue;
             }
 
-            cout << "Enter a password (between 10000 and 65000): ";
-            password = getNumber();
+            cout <<"Enter a password (between 10000 and 65000): ";
+            cin >> password;
 
-            if (password < 10000 || password > 65000) {
-                cout << "Invalid password. Please try again.\n";
+            if(password < 10000 || password > 65000)
+            {
+                cout<<"Invalid password. Please try again.\n";
                 continue;
             }
 
@@ -63,36 +56,36 @@ public:
             file << username << " " << password << endl;
             file.close();
 
-            cout << "Registration successful!\n";
+            cout<<"Registration is successful!\n";
 
             createProfile();
             return true;
         }
     }
 
-    // Login existing user
     bool loginUser() {
         ifstream check("users.txt");
         if (!check) {
-            cout << "No user found. Please register first.\n";
+            cout<<"No user found. Please register first.\n";
             return registerUser();
         }
 
         while (true) {
-            cout << "\nEnter Username (or 4 to go back): ";
-            cin >> username;
-            if (username == "4") return false;
+            cout<<"\nEnter Username (or 4 to go back): ";
+            cin>> username;
+            if(username == "4") return false;
 
             cout << "Enter Password: ";
-            password = getNumber();
+            cin >> password;
 
-            if (validateLogin(username, password)) {
-                cout << "Login successful!\n";
+            if (validateLogin(username, password)) 
+            {
+                cout<< "Login successful!\n";
 
                 int choice;
                 while (true) {
-                    cout << "\n1. View Profile\n2. Edit Profile\n3. Go Back\nYour choice: ";
-                    choice = getNumber();
+                    cout<<"\n1. View Profile\n2. Edit Profile\n3. Go Back\nYour choice: ";
+                    cin >> choice;
 
                     if (choice == 1) readProfile();
                     else if (choice == 2) overwriteProfile();
@@ -100,16 +93,16 @@ public:
                     else cout << "Try again.\n";
                 }
             } else {
-                cout << "Invalid login. Try again.\n";
-                cout << "Do you want to register? (1 = Yes, 2 = No): ";
+                cout << "Invalid username or password. Try again.\n";
+                cout << "Do you want to register first? (1 = Yes, 2 = No): ";
                 int option;
-                option = getNumber();
+                cin >> option;
                 if (option == 1) return registerUser();
             }
         }
     }
 
-    // Validate login credentials
+    // this is for validating login credentials
     bool validateLogin(string uname, int pass) {
         ifstream file("users.txt");
         string u;
@@ -120,9 +113,8 @@ public:
         return false;
     }
 
-    // Create profile file
     void createProfile() {
-        cin.ignore(); // clear buffer
+        cin.ignore();
         cout << "Enter Full Name: ";
         getline(cin, name);
         cout << "Enter Father's Name: ";
@@ -146,7 +138,7 @@ public:
         file << "Registration No: " << regNo << endl;
         file.close();
 
-        cout << "Profile saved!\n";
+        cout <<"Profile saved!\n";
     }
 
     void readProfile() {
@@ -164,7 +156,7 @@ public:
         cout << "--------------------\n";
     }
 
-    // to Overwrite profile
+    // to overrwwrite the profile or to update the profile
     void overwriteProfile() {
         cout << "Let's update your profile...\n";
         createProfile();
@@ -174,23 +166,21 @@ public:
 int main() {
     User user;
     int choice;
-
     while (true) {
         cout << "\n--- Welcome to User System ---\n";
         cout << "1. Login\n2. Register\n3. Exit\nEnter your choice: ";
-        choice = user.getNumber();
+        cin>>choice;
 
-        if (choice == 1) {
+        if(choice == 1) {
             user.loginUser();
-        } else if (choice == 2) {
+        }else if (choice == 2) {
             user.registerUser();
-        } else if (choice == 3) {
+        }else if (choice == 3) {
             cout << "Goodbye!\n";
             break;
-        } else {
+        }else {
             cout << "Invalid option. Try again.\n";
         }
     }
-
     return 0;
 }
