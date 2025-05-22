@@ -1,49 +1,33 @@
-// Part B: City Navigation System using Graph and Dijkstra's Algorithm
 #include <iostream>
-#include <climits> // for INT_MAX
-#include <cstring> // for strcmp
+#include <string>
 using namespace std;
 
-const int MAX_CITIES = 10; // Max number of cities
-
-// Structure for each road (edge)
-struct Road {
-    int dest;
-    int distance;
-    Road* next;
-};
-
-// Structure for each city (node)
-struct City {
-    char name[30];
-    Road* adjList; // adjacency list (linked list of roads)
-};
+struct Road{
+    int dest,distance;
+    Road* next;};
+struct City{
+    string name;
+    Road* adjList;};
 
 class CityGraph {
 private:
-    City cities[MAX_CITIES];
+    City cities[50];
     int cityCount;
-
-    int findCityIndex(const char* name) {
-        for (int i = 0; i < cityCount; ++i) {
-            if (strcmp(cities[i].name, name) == 0)
-                return i;
-        }
-        return -1;
-    }
-
-    void addRoadHelper(int src, int dest, int dist) {
-        Road* newRoad = new Road{dest, dist, cities[src].adjList};
-        cities[src].adjList = newRoad;
-    }
-
 public:
-    CityGraph() {
-        cityCount = 0;
-    }
+    CityGraph(){
+        cityCount = 0;}
 
-    void addCity(const char* name) {
-        if (cityCount >= MAX_CITIES) {
+    int findCityIndex(string& name) {
+        for (int i = 0; i < cityCount; ++i) {
+        if (cities[i].name == name) return i;}
+        return -1;}
+
+    void addRoadHelper(int src, int dest, int dist){
+        Road* newRoad = new Road{dest, dist, cities[src].adjList};
+        cities[src].adjList = newRoad;}
+
+    void addCity(string& name) {
+        if(cityCount >= 50){
             cout << "City limit reached!\n";
             return;
         }
@@ -51,13 +35,13 @@ public:
             cout << "City already exists.\n";
             return;
         }
-        strcpy(cities[cityCount].name, name);
+        cities[cityCount].name = name;
         cities[cityCount].adjList = nullptr;
         cityCount++;
         cout << "City added.\n";
     }
 
-    void addRoad(const char* from, const char* to, int dist) {
+    void addRoad(string& from, string& to, int dist) {
         int srcIdx = findCityIndex(from);
         int destIdx = findCityIndex(to);
         if (srcIdx == -1 || destIdx == -1) {
@@ -65,11 +49,11 @@ public:
             return;
         }
         addRoadHelper(srcIdx, destIdx, dist);
-        addRoadHelper(destIdx, srcIdx, dist); // undirected road
+        addRoadHelper(destIdx, srcIdx, dist);
         cout << "Road added between " << from << " and " << to << " (" << dist << " km)\n";
     }
 
-    void deleteRoad(const char* from, const char* to) {
+    void deleteRoad(string& from, string& to) {
         int srcIdx = findCityIndex(from);
         int destIdx = findCityIndex(to);
         if (srcIdx == -1 || destIdx == -1) {
@@ -103,7 +87,7 @@ public:
         cout << "Road deleted between " << from << " and " << to << ".\n";
     }
 
-    void deleteCity(const char* name) {
+    void deleteCity(string& name) {
         int idx = findCityIndex(name);
         if (idx == -1) {
             cout << "City not found.\n";
@@ -155,7 +139,7 @@ public:
         }
     }
 
-    void dijkstra(const char* startCity, const char* endCity) {
+    void dijkstra(string& startCity, string& endCity) {
         int start = findCityIndex(startCity);
         int end = findCityIndex(endCity);
 
@@ -164,12 +148,12 @@ public:
             return;
         }
 
-        int dist[MAX_CITIES];
-        bool visited[MAX_CITIES];
-        int prev[MAX_CITIES];
+        int dist[50];
+        bool visited[50];
+        int prev[50];
 
         for (int i = 0; i < cityCount; ++i) {
-            dist[i] = INT_MAX;
+            dist[i] = 50;
             visited[i] = false;
             prev[i] = -1;
         }
@@ -183,7 +167,7 @@ public:
                     u = i;
             }
 
-            if (dist[u] == INT_MAX) break; // remaining unreachable
+            if (dist[u] == 50) break; // remaining unreachable
             visited[u] = true;
 
             for (Road* r = cities[u].adjList; r != nullptr; r = r->next) {
@@ -196,14 +180,14 @@ public:
             }
         }
 
-        if (dist[end] == INT_MAX) {
+        if (dist[end] == 50) {
             cout << "No path from " << startCity << " to " << endCity << ".\n";
             return;
         }
 
         // Print path
         cout << "\nShortest path from " << startCity << " to " << endCity << ":\n";
-        int path[MAX_CITIES], pathLen = 0;
+        int path[50], pathLen = 0;
         for (int v = end; v != -1; v = prev[v])
             path[pathLen++] = v;
 
@@ -218,7 +202,7 @@ public:
 int main() {
     CityGraph graph;
     int choice;
-    char city1[30], city2[30];
+    string city1, city2;
     int distance;
 
     do {
@@ -231,15 +215,15 @@ int main() {
         case 1:
             cout << "Enter city name: ";
             cin.ignore();
-            cin.getline(city1, 30);
+            getline(cin, city1);
             graph.addCity(city1);
             break;
         case 2:
             cout << "Enter source city: ";
             cin.ignore();
-            cin.getline(city1, 30);
+            getline(cin, city1);
             cout << "Enter destination city: ";
-            cin.getline(city2, 30);
+            getline(cin, city2);
             cout << "Enter distance (km): ";
             cin >> distance;
             graph.addRoad(city1, city2, distance);
@@ -247,15 +231,15 @@ int main() {
         case 3:
             cout << "Enter city to delete: ";
             cin.ignore();
-            cin.getline(city1, 30);
+            getline(cin, city1);
             graph.deleteCity(city1);
             break;
         case 4:
             cout << "Enter source city: ";
             cin.ignore();
-            cin.getline(city1, 30);
+            getline(cin, city1);
             cout << "Enter destination city: ";
-            cin.getline(city2, 30);
+            getline(cin, city2);
             graph.deleteRoad(city1, city2);
             break;
         case 5:
@@ -264,9 +248,9 @@ int main() {
         case 6:
             cout << "Enter start city: ";
             cin.ignore();
-            cin.getline(city1, 30);
+            getline(cin, city1);
             cout << "Enter end city: ";
-            cin.getline(city2, 30);
+            getline(cin, city2);
             graph.dijkstra(city1, city2);
             break;
         case 7:
@@ -276,6 +260,5 @@ int main() {
             cout << "Invalid choice.\n";
         }
     } while (choice != 7);
-
     return 0;
 }

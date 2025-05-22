@@ -1,4 +1,3 @@
-// Part A: Student Record Management using Hash Table
 #include <iostream>
 #include <string>
 using namespace std;
@@ -35,38 +34,38 @@ public:
         newStudent->department = dept;
         newStudent->next = table[index];
         table[index] = newStudent;
-        cout << "Student inserted successfully.\n";
+        cout<<"Student inserted successfully.\n";
     }
 
-    void search(int roll) {
+    void search(int roll){
         int index = hashFunction(roll);
         Student* current = table[index];
-        while (current) {
+        while(current){
             if (current->rollNumber == roll) {
-                cout << "\nStudent Found:\n";
-                cout << "Roll Number: " << current->rollNumber << endl;
-                cout << "Name: " << current->name << endl;
-                cout << "Department: " << current->department << endl;
-                cout << "CGPA: " << current->cgpa << endl;
+                cout<<"\nStudent Found:\n";
+                cout<<"Roll Number: "<<current->rollNumber<<endl;
+                cout<<"Name: "<<current->name<<endl;
+                cout<<"Department: "<< current->department<<endl;
+                cout<<"CGPA: "<<current->cgpa<<endl;
                 return;
             }
             current = current->next;
         }
-        cout << "Student not found.\n";
+        cout<<"Student not found.\n";
     }
 
     void deleteRecord(int roll) {
         int index = hashFunction(roll);
         Student* current = table[index];
         Student* prev = NULL;
-        while (current) {
-            if (current->rollNumber == roll) {
-                if (prev)
+        while(current){
+            if(current->rollNumber == roll){
+                if(prev)
                     prev->next = current->next;
                 else
                     table[index] = current->next;
                 delete current;
-                cout << "Student deleted successfully.\n";
+                cout<<"Student deleted successfully.\n";
                 return;
             }
             prev = current;
@@ -75,23 +74,23 @@ public:
         cout << "Student not found.\n";
     }
 
-    void display() {
-        cout << "\n--- Student Records ---\n";
-        for (int i = 0; i < size; i++) {
-            cout << "Bucket " << i << ": ";
+    void display(){
+        cout<<"\n--- Student Records ---\n";
+        for(int i = 0; i < size; i++){
+            cout<<"Bucket "<<i<<": ";
             Student* current = table[i];
-            while (current) {
-                cout << "[" << current->rollNumber << ", " << current->name << ", " << current->department << ", " << current->cgpa << "] -> ";
+            while(current){
+                cout<<"["<< current->rollNumber<< ", "<< current->name<< ", " << current->department << ", " << current->cgpa << "] -> ";
                 current = current->next;
             }
-            cout << "NULL\n";
+            cout<<"NULL\n";
         }
     }
 
-    ~StudentHashTable() {
-        for (int i = 0; i < size; i++) {
+    ~StudentHashTable(){
+        for (int i = 0; i < size; i++){
             Student* current = table[i];
-            while (current) {
+            while(current){
                 Student* temp = current;
                 current = current->next;
                 delete temp;
@@ -101,10 +100,10 @@ public:
     }
 };
 
-int main() {
+int main(){
     int size;
-    cout << "Enter hash table size: ";
-    cin >> size;
+    cout<<"Enter hash table size: ";
+    cin>>size;
     StudentHashTable ht(size);
 
     int choice;
@@ -113,7 +112,6 @@ int main() {
         cout << "1. Insert Student\n2. Search Student\n3. Delete Student\n4. Display All\n5. Exit\n";
         cout << "Enter choice: ";
         cin >> choice;
-
         if (choice == 1) {
             int roll;
             float cgpa;
