@@ -12,7 +12,7 @@
 //         }
 
 //         void push(int value) {
-//             if(top == 10-1) {
+//             if(top == 9) {
 //                 cout << "Stack overflow!" <<endl;
 //             }
 //             else {
